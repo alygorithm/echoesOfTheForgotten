@@ -1,0 +1,29 @@
+package it.unicam.cs.mpgc.rpg122711.domain.mission;
+import java.util.function.Consumer;
+
+public class MissionChoice {
+
+    private final String label;
+    private final Consumer<MissionContext> effect;
+    private final MissionStep nextStep;
+
+    public MissionChoice(String label,
+                         Consumer<MissionContext> effect,
+                         MissionStep nextStep) {
+        this.label = label;
+        this.effect = effect;
+        this.nextStep = nextStep;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public MissionStep getNextStep() {
+        return nextStep;
+    }
+
+    public void apply(MissionContext ctx) {
+        effect.accept(ctx);
+    }
+}
