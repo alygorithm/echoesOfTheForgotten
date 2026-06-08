@@ -132,3 +132,9 @@ MENU PRINCIPALE
     -fx-background-size: cover;
     -fx-background-position: center center;
 }
+
+/* GAME COMPLETED VIEW */
+#title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}

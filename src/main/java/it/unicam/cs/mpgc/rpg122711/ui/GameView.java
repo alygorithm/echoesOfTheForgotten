@@ -35,7 +35,7 @@ public class GameView {
         this.gameFlow = gameFlow;
         this.player = gameFlow.getPlayer();
 
-        this.worldService = new WorldService();
+        this.worldService = gameFlow.getWorldService();
 
         this.root = new BorderPane();
         this.root.setPadding(new Insets(15));
@@ -71,7 +71,7 @@ public class GameView {
 
     private void loadMission() {
 
-        currentMission = MissionContent.firstMission();
+        currentMission = gameFlow.getCurrentMission();
         currentStep = currentMission.getStartStep();
 
         missionText.setText(
@@ -86,9 +86,7 @@ public class GameView {
     private void loadStep(MissionStep step) {
 
         currentStep = step;
-
         missionText.setText(step.getText());
-
         choicesBox.getChildren().clear();
 
         List<MissionChoice> choices = step.getChoices();
@@ -96,12 +94,10 @@ public class GameView {
         if (choices == null || choices.isEmpty()) {
 
             Button continueBtn = new Button("Continua");
-
             continueBtn.setMaxWidth(Double.MAX_VALUE);
-
             continueBtn.setOnAction(e -> {
                 worldService.advanceAfterMission();
-                loadMission();
+                gameFlow.nextMission();
                 refreshUI();
             });
 
@@ -126,7 +122,7 @@ public class GameView {
                     loadStep(next);
                 } else {
                     worldService.advanceAfterMission();
-                    loadMission();
+                    gameFlow.nextMission();
                 }
 
                 refreshUI();
