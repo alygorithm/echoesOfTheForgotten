@@ -1,5 +1,9 @@
 package it.unicam.cs.mpgc.rpg122711.domain.mission;
 
+/*
+ * Contenitore dati missione.
+ * Responsabilità: definire struttura immutabile della missione (SRP).
+ */
 public class Mission {
 
     private final String title;

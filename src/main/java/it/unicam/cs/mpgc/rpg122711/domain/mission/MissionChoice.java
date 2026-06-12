@@ -1,6 +1,11 @@
 package it.unicam.cs.mpgc.rpg122711.domain.mission;
+
 import java.util.function.Consumer;
 
+/*
+ * Rappresenta una scelta narrativa.
+ * Incapsula effetto e transizione tra stati narrativi.
+ */
 public class MissionChoice {
 
     private final String label;
@@ -24,6 +29,8 @@ public class MissionChoice {
     }
 
     public void apply(MissionContext ctx) {
-        effect.accept(ctx);
+        if (effect != null) {
+            effect.accept(ctx);
+        }
     }
 }

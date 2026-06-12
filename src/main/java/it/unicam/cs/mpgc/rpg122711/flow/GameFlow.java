@@ -1,58 +1,73 @@
 package it.unicam.cs.mpgc.rpg122711.flow;
 
-import it.unicam.cs.mpgc.rpg122711.content.MissionContent;
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.domain.mission.Mission;
+import it.unicam.cs.mpgc.rpg122711.persistence.GamePersistence;
+import it.unicam.cs.mpgc.rpg122711.persistence.SaveData;
 import it.unicam.cs.mpgc.rpg122711.service.WorldService;
 import it.unicam.cs.mpgc.rpg122711.ui.*;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/*
+ * Controller principale del flusso di gioco.
+ *
+ * Responsabilità (SRP):
+ * - gestione navigazione UI JavaFX
+ * - orchestrazione dei sistemi di gioco (world, missioni, save)
+ * - gestione stato sessione player
+ *
+ * Nota:
+ * GameFlow è il punto di composizione tra dominio e infrastruttura.
+ */
 public class GameFlow {
 
     private final Stage stage;
+    private final GamePersistence saveManager;
+
     private Player player;
 
-    private int currentMissionIndex = 1;
-    private Mission currentMission;
-
     private final WorldService worldService = new WorldService();
+    private final MissionManager missionManager = new MissionManager();
 
-    public WorldService getWorldService() {
-        return worldService;
-    }
+    private int currentSlot = 1;
 
-    public GameFlow(Stage stage) {
+    public GameFlow(Stage stage, GamePersistence saveManager) {
         this.stage = stage;
+        this.saveManager = saveManager;
     }
 
     public void start() {
         showMainMenu();
     }
 
+    public void showMainMenu() {
+        setScene(new MainMenuView(this).getRoot());
+    }
+
     public void showPrologue() {
-        PrologueView view = new PrologueView(this);
-        setScene(view.getRoot());
+        setScene(new PrologueView(this).getRoot());
     }
 
     public void showCharacterCreation() {
-        CharacterCreationView view = new CharacterCreationView(this);
-        setScene(view.getRoot());
+        setScene(new CharacterCreationView(this).getRoot());
     }
 
     public void showGameStart() {
-        GameView view = new GameView(this);
-        setScene(view.getRoot());
+        setScene(new GameView(this).getRoot());
+    }
+
+    public void showLoadGame() {
+        setScene(new LoadGameView(this).getRoot());
+    }
+
+    public void showGameCompleted() {
+        setScene(new GameCompletedView(this).getRoot());
     }
 
     private void setScene(javafx.scene.Parent root) {
-
         Scene scene = new Scene(root, 800, 600);
-
-        scene.getStylesheets().add(
-                getClass().getResource("/style.css").toExternalForm()
-        );
-
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.setTitle("RPG");
         stage.show();
@@ -60,45 +75,26 @@ public class GameFlow {
 
     public void setPlayer(Player player) {
         this.player = player;
-        this.currentMissionIndex = 1;
+        missionManager.reset();
     }
 
     public Player getPlayer() {
         return player;
     }
 
-    public void showMainMenu() {
-        MainMenuView view = new MainMenuView(this);
-        setScene(view.getRoot());
-    }
-
-    public void showLoadGame() {
-        LoadGameView view = new LoadGameView(this);
-        setScene(view.getRoot());
-    }
-
-    private Mission buildMission(Player player) {
-        return switch (currentMissionIndex) {
-            case 1 -> MissionContent.firstMission(player);
-            case 2 -> MissionContent.secondMission(player);
-            case 3 -> MissionContent.thirdMission(player);
-            case 4 -> MissionContent.fourthMission(player);
-            case 5 -> MissionContent.fifthMission(player);
-            case 6 -> MissionContent.finalMission(player, worldService.getMemory());
-
-            default -> null;
-        };
+    public WorldService getWorldService() {
+        return worldService;
     }
 
     public Mission getCurrentMission() {
         if (player == null) return null;
-        return buildMission(player);
+        return missionManager.build(player);
     }
 
     public void nextMission() {
-        currentMissionIndex++;
+        missionManager.next();
 
-        if (currentMissionIndex > 6) {
+        if (missionManager.isFinished()) {
             showGameCompleted();
             return;
         }
@@ -106,8 +102,39 @@ public class GameFlow {
         showGameStart();
     }
 
-    public void showGameCompleted() {
-        GameCompletedView view = new GameCompletedView(this);
-        setScene(view.getRoot());
+    /*
+     * Salvataggio stato completo del gioco.
+     */
+    public SaveData toSaveData() {
+        return saveManager.save(player, missionManager, worldService);
+    }
+
+    /*
+     * Ripristino stato di gioco da salvataggio.
+     *
+     * Nota architetturale:
+     * - Player viene ricostruito qui (responsabilità del GameFlow)
+     * - SaveManager si occupa solo di world + progress
+     */
+    public void loadFromSave(SaveData data) {
+
+        this.player = new Player(
+                data.player.name,
+                data.player.characterClass
+        );
+
+        for (int i = 1; i < data.player.level; i++) {
+            player.gainExperience(100);
+        }
+
+        saveManager.load(data, missionManager, worldService);
+    }
+
+    public int getCurrentSlot() {
+        return currentSlot;
+    }
+
+    public void setCurrentSlot(int slot) {
+        this.currentSlot = slot;
     }
 }

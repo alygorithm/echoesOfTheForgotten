@@ -1,9 +1,13 @@
 package it.unicam.cs.mpgc.rpg122711.domain;
 
+/*
+ * Enum che rappresenta le classi del giocatore.
+ * Responsabilità: definire il tipo di personaggio (SRP).
+ */
 public enum CharacterClass {
-    ARCANIST("Arcano"), // -> magia pura, memoria, studio
-    WANDERER("Viandante"), // -> bilanciato, esplorazione
-    SCHOLAR("Studioso"); // --> debole in combat, forte in magia/analisi
+    ARCANIST("Arcano"),
+    WANDERER("Viandante"),
+    SCHOLAR("Studioso");
 
     private final String label;
 
@@ -12,11 +16,6 @@ public enum CharacterClass {
     }
 
     public String getLabel() {
-        return label;
-    }
-
-    @Override
-    public String toString() {
         return label;
     }
 }

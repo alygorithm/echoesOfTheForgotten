@@ -1,0 +1,14 @@
+{
+  "playerName": "Aly",
+  "characterClass": "ARCANIST",
+  "level": 1,
+  "experience": 0,
+  "hp": 80,
+  "mana": 120,
+  "currentMissionIndex": 1,
+  "year": 1024,
+  "instability": 0,
+  "events": [
+    "ENTERED_CHURCH"
+  ]
+}

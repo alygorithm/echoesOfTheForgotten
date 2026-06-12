@@ -11,11 +11,17 @@ import javafx.util.Duration;
 
 import java.util.List;
 
+/*
+ * View narrativa del prologo.
+ *
+ * Responsabilità:
+ * - mostrare sequenza testuale introduttiva
+ * - gestire avanzamento interattivo
+ */
 public class PrologueView {
 
     private final GameFlow gameFlow;
-
-    private final VBox root = new VBox();
+    private final VBox root = new VBox(20);
 
     private final Label text = new Label();
 
@@ -25,17 +31,22 @@ public class PrologueView {
     private boolean animating = false;
 
     public PrologueView(GameFlow gameFlow) {
+
         this.gameFlow = gameFlow;
 
         root.setAlignment(Pos.CENTER);
-        root.setSpacing(20);
-        root.setStyle("-fx-background-color: #1b1d24;");
         root.setId("prologueView");
+        root.setStyle("-fx-background-color: #1b1d24;");
 
         text.setWrapText(true);
-        text.setMaxWidth(600);
+        text.setMaxWidth(650);
         text.setTextAlignment(TextAlignment.CENTER);
-        text.setStyle("-fx-font-size: 18px; -fx-text-fill: #e6e5e0;");
+        text.setAlignment(Pos.CENTER);
+        text.setStyle("""
+                -fx-font-size: 18px;
+                -fx-text-fill: #e6e5e0;
+                -fx-alignment: center;
+        """);
 
         root.getChildren().add(text);
 
@@ -44,7 +55,9 @@ public class PrologueView {
         root.setOnMouseClicked(e -> nextLine());
     }
 
-    // effetto fade in
+    /*
+     * Mostra una riga del prologo con fade-in.
+     */
     private void showLine(int i) {
 
         animating = true;
@@ -60,7 +73,9 @@ public class PrologueView {
         fade.play();
     }
 
-    // si avanza con il testo al click
+    /*
+     * Avanza la narrazione al click.
+     */
     private void nextLine() {
 
         if (animating) return;

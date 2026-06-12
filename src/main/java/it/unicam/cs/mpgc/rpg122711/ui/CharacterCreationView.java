@@ -7,51 +7,44 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+/*
+ * View responsabile della creazione del personaggio.
+ *
+ * SOLID:
+ * - SRP: solo UI + validazione input base
+ * - DIP: dipende da GameFlow (controller), non da logica interna
+ */
 public class CharacterCreationView {
+
     private final GameFlow gameFlow;
     private final VBox root;
 
     public CharacterCreationView(GameFlow gameFlow) {
         this.gameFlow = gameFlow;
         this.root = new VBox(15);
-
         buildUI();
     }
 
     private void buildUI() {
+
         root.setAlignment(Pos.CENTER);
         root.setId("creationView");
-        root.setStyle("""
-            -fx-background-color: #1b1d24;
-        """);
+        root.setStyle("-fx-background-color: #1b1d24;");
 
-        // titolo
         Label title = new Label("Creazione Personaggio");
-        title.setStyle("""
-            -fx-font-size: 28px;
-            -fx-text-fill: #e6e5e0;
-            -fx-font-weight: bold;
-        """);
+        styleTitle(title);
 
-        // input name
         TextField nameField = new TextField();
         nameField.setPromptText("Nome del viaggiatore");
         nameField.setMaxWidth(260);
 
-        // selezione della classe
         ComboBox<CharacterClass> classBox = new ComboBox<>();
         classBox.getItems().addAll(CharacterClass.values());
         classBox.setValue(CharacterClass.WANDERER);
         classBox.setMaxWidth(260);
 
-        // descrizione della classe
         Label classDescription = new Label();
-        classDescription.setWrapText(true);
-        classDescription.setMaxWidth(300);
-        classDescription.setStyle("""
-            -fx-text-fill: #b8b8b8;
-            -fx-font-size: 13px;
-        """);
+        styleDescription(classDescription);
 
         updateClassDescription(classDescription, classBox.getValue());
 
@@ -59,39 +52,18 @@ public class CharacterCreationView {
                 updateClassDescription(classDescription, classBox.getValue())
         );
 
-        // pulsanti
         Button createBtn = new Button("Inizia Viaggio");
+        styleButton(createBtn);
 
-        createBtn.setStyle("""
-            -fx-background-color: #3a3f4b;
-            -fx-text-fill: #e6e5e0;
-            -fx-padding: 10 22;
-            -fx-background-radius: 6;
-        """);
-
-        createBtn.setOnMouseEntered(e ->
-                createBtn.setStyle("""
-                    -fx-background-color: #4a5160;
-                    -fx-text-fill: #ffffff;
-                    -fx-padding: 10 22;
-                    -fx-background-radius: 6;
-                """)
-        );
-
-        createBtn.setOnMouseExited(e ->
-                createBtn.setStyle("""
-                    -fx-background-color: #3a3f4b;
-                    -fx-text-fill: #e6e5e0;
-                    -fx-padding: 10 22;
-                    -fx-background-radius: 6;
-                """)
-        );
-
-        // errori
         Label result = new Label();
         result.setStyle("-fx-text-fill: #c96a6a;");
 
-        // azioni
+        /*
+         * Azione principale:
+         * - validazione input
+         * - creazione Player
+         * - passaggio al GameFlow
+         */
         createBtn.setOnAction(e -> {
 
             String name = nameField.getText();
@@ -102,13 +74,17 @@ public class CharacterCreationView {
                 return;
             }
 
+            if (selectedClass == null) {
+                result.setText("Seleziona una classe.");
+                return;
+            }
+
             Player player = new Player(name, selectedClass);
 
             gameFlow.setPlayer(player);
             gameFlow.showGameStart();
         });
 
-        // layout
         root.getChildren().addAll(
                 title,
                 nameField,
@@ -119,7 +95,58 @@ public class CharacterCreationView {
         );
     }
 
+    private void styleTitle(Label title) {
+        title.setStyle("""
+            -fx-font-size: 28px;
+            -fx-text-fill: #e6e5e0;
+            -fx-font-weight: bold;
+        """);
+    }
+
+    private void styleDescription(Label label) {
+        label.setWrapText(true);
+        label.setMaxWidth(300);
+        label.setStyle("""
+            -fx-text-fill: #b8b8b8;
+            -fx-font-size: 13px;
+        """);
+    }
+
+    private void styleButton(Button button) {
+
+        button.setStyle("""
+            -fx-background-color: #3a3f4b;
+            -fx-text-fill: #e6e5e0;
+            -fx-padding: 10 22;
+            -fx-background-radius: 6;
+        """);
+
+        button.setOnMouseEntered(e ->
+                button.setStyle("""
+                    -fx-background-color: #4a5160;
+                    -fx-text-fill: #ffffff;
+                    -fx-padding: 10 22;
+                    -fx-background-radius: 6;
+                """)
+        );
+
+        button.setOnMouseExited(e ->
+                button.setStyle("""
+                    -fx-background-color: #3a3f4b;
+                    -fx-text-fill: #e6e5e0;
+                    -fx-padding: 10 22;
+                    -fx-background-radius: 6;
+                """)
+        );
+    }
+
+    /*
+     * Single Responsibility: solo descrizione UI della classe
+     */
     private void updateClassDescription(Label label, CharacterClass type) {
+
+        if (type == null) return;
+
         switch (type) {
 
             case ARCANIST -> label.setText(

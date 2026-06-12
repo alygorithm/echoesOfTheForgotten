@@ -1,5 +1,9 @@
 package it.unicam.cs.mpgc.rpg122711.domain.world;
 
+/*
+ * Stato globale del mondo.
+ * Gestisce tempo e instabilità narrativa.
+ */
 public class WorldState {
 
     private int year = 1024;
@@ -10,7 +14,9 @@ public class WorldState {
     }
 
     public void increaseInstability(int value) {
-        instability += value;
+        if (value > 0) {
+            instability += value;
+        }
     }
 
     public int getYear() {
@@ -19,5 +25,13 @@ public class WorldState {
 
     public int getInstability() {
         return instability;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public void setInstability(int instability) {
+        this.instability = instability;
     }
 }

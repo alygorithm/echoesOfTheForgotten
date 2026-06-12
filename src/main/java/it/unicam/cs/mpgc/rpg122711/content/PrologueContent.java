@@ -1,7 +1,15 @@
 package it.unicam.cs.mpgc.rpg122711.content;
 import java.util.List;
-
+/**
+ * Contiene il testo del prologo del gioco.
+ * Fornisce una sequenza ordinata di righe narrative
+ * utilizzate nella schermata iniziale.
+ */
 public class PrologueContent {
+    /**
+     * Restituisce tutte le righe che compongono il prologo
+     * @return lista ordinata dei  paragrafi narrativi
+     */
     public static List<String> lines() {
         return List.of(
                 "Il mondo non è più quello delle grandi guerre tra eroi e demoni." +

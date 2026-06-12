@@ -1,15 +1,15 @@
 package it.unicam.cs.mpgc.rpg122711.ui;
 
-import it.unicam.cs.mpgc.rpg122711.content.*;
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.domain.mission.*;
-import it.unicam.cs.mpgc.rpg122711.domain.world.EventType;
 import it.unicam.cs.mpgc.rpg122711.flow.GameFlow;
+import it.unicam.cs.mpgc.rpg122711.persistence.SaveData;
+import it.unicam.cs.mpgc.rpg122711.persistence.SaveService;
 import it.unicam.cs.mpgc.rpg122711.service.WorldService;
-import it.unicam.cs.mpgc.rpg122711.content.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
@@ -18,139 +18,207 @@ public class GameView {
 
     private final GameFlow gameFlow;
     private final Player player;
-
     private final WorldService worldService;
+    private final SaveService saveService;
 
-    private final BorderPane root;
+    private final BorderPane root = new BorderPane();
 
     private Mission currentMission;
     private MissionStep currentStep;
 
-    // UI ELEMENTS
-    private final Label missionText = new Label();
-    private final Label stats = new Label();
+    private final TextArea storyArea = new TextArea();
+    private final TextArea statsArea = new TextArea();
     private final VBox choicesBox = new VBox(10);
 
     public GameView(GameFlow gameFlow) {
         this.gameFlow = gameFlow;
         this.player = gameFlow.getPlayer();
-
         this.worldService = gameFlow.getWorldService();
-
-        this.root = new BorderPane();
-        this.root.setPadding(new Insets(15));
+        this.saveService = new SaveService();
 
         buildUI();
         loadMission();
         refreshUI();
     }
 
-    // ---------------- UI SETUP ----------------
+    // ---------------- UI ----------------
 
     private void buildUI() {
 
-        missionText.setWrapText(true);
-        missionText.setStyle("-fx-font-size: 16px;");
+        Button saveBtn = new Button("Salva");
+        Button loadBtn = new Button("Carica");
+        Button menuBtn = new Button("Menu");
 
-        stats.setStyle("-fx-font-size: 12px;");
+        saveBtn.setOnAction(e -> saveGame());
+        loadBtn.setOnAction(e -> loadGame());
+        menuBtn.setOnAction(e -> gameFlow.showMainMenu());
 
-        choicesBox.setSpacing(10);
+        HBox topBar = new HBox(10, saveBtn, loadBtn, menuBtn);
+        topBar.setPadding(new Insets(10));
 
-        root.setCenter(missionText);
+        storyArea.setWrapText(true);
+        storyArea.setEditable(false);
+
+        statsArea.setWrapText(true);
+        statsArea.setEditable(false);
+        statsArea.setMinWidth(220);
+
+        root.setTop(topBar);
+        root.setCenter(storyArea);
+        root.setRight(statsArea);
         root.setBottom(choicesBox);
-        root.setRight(stats);
 
         BorderPane.setMargin(choicesBox, new Insets(10));
-        BorderPane.setMargin(stats, new Insets(10));
-
-        missionText.setId("missionText");
-        stats.setId("stats");
+        BorderPane.setMargin(statsArea, new Insets(10));
     }
 
-    // ---------------- GAME FLOW ----------------
+    // ---------------- SAVE / LOAD ----------------
+
+    private void saveGame() {
+        SaveData data = gameFlow.toSaveData();
+        saveService.save(data, gameFlow.getCurrentSlot());
+    }
+
+    private void loadGame() {
+        SaveData data = saveService.load(gameFlow.getCurrentSlot());
+        if (data == null) return;
+
+        gameFlow.loadFromSave(data);
+        loadMission();
+        refreshUI();
+    }
+
+    // ---------------- FLOW ----------------
 
     private void loadMission() {
 
         currentMission = gameFlow.getCurrentMission();
-        currentStep = currentMission.getStartStep();
+        if (currentMission == null) return;
 
-        missionText.setText(
-                WorldContent.getIntro(worldService.getState()) +
-                        "\n\n=== " + currentMission.getTitle() + " ===\n\n" +
-                        currentStep.getText()
-        );
-
-        loadStep(currentStep);
+        loadStep(currentMission.getStartStep());
     }
 
     private void loadStep(MissionStep step) {
 
         currentStep = step;
-        missionText.setText(step.getText());
+
+        storyArea.setText(buildStoryText(step));
+
         choicesBox.getChildren().clear();
 
         List<MissionChoice> choices = step.getChoices();
 
         if (choices == null || choices.isEmpty()) {
-
-            Button continueBtn = new Button("Continua");
-            continueBtn.setMaxWidth(Double.MAX_VALUE);
-            continueBtn.setOnAction(e -> {
-                worldService.advanceAfterMission();
-                gameFlow.nextMission();
-                refreshUI();
-            });
-
-            choicesBox.getChildren().add(continueBtn);
+            addContinueButton();
             return;
         }
 
         for (MissionChoice choice : choices) {
-
-            Button btn = new Button(choice.getLabel());
-            btn.setMaxWidth(Double.MAX_VALUE);
-
-            btn.setOnAction(e -> {
-
-                MissionContext ctx = new MissionContext(player, worldService);
-
-                choice.apply(ctx);
-
-                MissionStep next = choice.getNextStep();
-
-                if (next != null) {
-                    loadStep(next);
-                } else {
-                    worldService.advanceAfterMission();
-                    gameFlow.nextMission();
-                }
-
-                refreshUI();
-            });
-
-            choicesBox.getChildren().add(btn);
+            addChoiceButton(choice);
         }
     }
 
-    // ---------------- STATS ----------------
+    private void addContinueButton() {
 
-    private void refreshUI() {
+        Button btn = new Button("Continua");
+        btn.setMaxWidth(Double.MAX_VALUE);
 
-        stats.setText(
-                "PLAYER\n" +
-                        player.getName() + "\n" +
-                        player.getCharacterClass() + "\n\n" +
-                        "HP: " + player.getHp() + "\n" +
-                        "Mana: " + player.getMana() + "\n" +
-                        "Level: " + player.getLevel() + "\n" +
-                        "XP: " + player.getExperience() + "\n\n" +
-                        "WORLD\n" +
-                        "Year: " + worldService.getState().getYear() + "\n" +
-                        "Flags: " + worldService.getMemory().contains(EventType.ENTERED_RUINS)
+        btn.setOnAction(e -> {
+            worldService.advanceAfterMission();
+            gameFlow.nextMission();
+            loadMission();
+            refreshUI();
+        });
+
+        choicesBox.getChildren().add(btn);
+    }
+
+    private void addChoiceButton(MissionChoice choice) {
+
+        Button btn = new Button(choice.getLabel());
+        btn.setMaxWidth(Double.MAX_VALUE);
+
+        btn.setOnAction(e -> {
+
+            MissionContext ctx = new MissionContext(player, worldService);
+            choice.apply(ctx);
+
+            MissionStep next = choice.getNextStep();
+
+            if (next != null) {
+                loadStep(next);
+            } else {
+                worldService.advanceAfterMission();
+                gameFlow.nextMission();
+                loadMission();
+            }
+
+            refreshUI();
+        });
+
+        choicesBox.getChildren().add(btn);
+    }
+
+    // ---------------- TEXT RENDERING ----------------
+
+    private String buildStoryText(MissionStep step) {
+        return """
+                %s
+
+                === %s ===
+
+                %s
+                """.formatted(
+                buildWorldHeader(),
+                currentMission.getTitle(),
+                step.getText()
         );
     }
 
-    // ---------------- ROOT ----------------
+    private String buildWorldHeader() {
+        return """
+                WORLD
+                Year: %d
+                Instability: %d
+                """.formatted(
+                worldService.getState().getYear(),
+                worldService.getState().getInstability()
+        );
+    }
+
+    private void refreshUI() {
+        statsArea.setText(buildStatsText());
+    }
+
+    private String buildStatsText() {
+        return """
+                PLAYER
+                %s
+                %s
+
+                HP: %d
+                Mana: %d
+                Level: %d
+                XP: %d
+
+                WORLD
+                Year: %d
+                Instability: %d
+                Flags: %d
+                """.formatted(
+                player.getName(),
+                player.getCharacterClass(),
+                player.getHp(),
+                player.getMana(),
+                player.getLevel(),
+                player.getExperience(),
+                worldService.getState().getYear(),
+                worldService.getState().getInstability(),
+                worldService.getMemory().getAll().size()
+        );
+    }
+
+
 
     public BorderPane getRoot() {
         return root;

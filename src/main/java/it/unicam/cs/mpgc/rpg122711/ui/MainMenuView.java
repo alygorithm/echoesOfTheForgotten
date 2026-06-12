@@ -1,55 +1,66 @@
 package it.unicam.cs.mpgc.rpg122711.ui;
+
 import it.unicam.cs.mpgc.rpg122711.flow.GameFlow;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.image.Image;
-import javafx.scene.layout.*;
 
+/*
+ * Menu principale del gioco.
+ *
+ * Responsabilità:
+ * - entry point UI
+ * - navigazione verso le principali scene
+ */
 public class MainMenuView {
+
     private final VBox root;
 
     public MainMenuView(GameFlow gameFlow) {
+
         root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setId("mainMenu");
 
-        Label echoes = new Label("ECHOES");
-        echoes.getStyleClass().add("main-title");
-        Label ofThe = new Label("of the");
-        ofThe.getStyleClass().add("sub-title");
-        Label forgotten = new Label("FORGOTTEN");
-        forgotten.getStyleClass().add("main-title");
+        Label title1 = styledLabel("ECHOES", "main-title");
+        Label title2 = styledLabel("of the", "sub-title");
+        Label title3 = styledLabel("FORGOTTEN", "main-title");
 
+        Button newGame = styledButton("Nuova Partita");
+        Button loadGame = styledButton("Carica Partita");
+        Button exit = styledButton("Esci");
 
-        Button newGame = new Button("Nuova Partita");
-        newGame.getStyleClass().add("menu-btn");
-        Button loadGame = new Button("Carica Partita");
-        loadGame.getStyleClass().add("menu-btn");
-        Button exit = new Button("Esci");
-        exit.getStyleClass().add("menu-btn");
-
-        newGame.setPrefWidth(220);
-        loadGame.setPrefWidth(220);
-        exit.setPrefWidth(220);
-
-        newGame.setOnAction( e -> gameFlow.showPrologue() );
-        loadGame.setOnAction( e -> gameFlow.showLoadGame() );
-        exit.setOnAction( e -> System.exit(0));
+        newGame.setOnAction(e -> gameFlow.showPrologue());
+        loadGame.setOnAction(e -> gameFlow.showLoadGame());
+        exit.setOnAction(e -> System.exit(0));
 
         root.getChildren().addAll(
-                echoes,
-                ofThe,
-                forgotten,
+                title1,
+                title2,
+                title3,
                 newGame,
                 loadGame,
                 exit
         );
     }
 
+    private Label styledLabel(String text, String styleClass) {
+        Label label = new Label(text);
+        label.getStyleClass().add(styleClass);
+        return label;
+    }
+
+    private Button styledButton(String text) {
+
+        Button button = new Button(text);
+        button.getStyleClass().add("menu-btn");
+        button.setPrefWidth(220);
+
+        return button;
+    }
+
     public VBox getRoot() {
         return root;
     }
-
 }

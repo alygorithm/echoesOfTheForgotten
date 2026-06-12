@@ -2,6 +2,10 @@ package it.unicam.cs.mpgc.rpg122711.domain.mission;
 
 import java.util.List;
 
+/*
+ * Nodo narrativo della missione.
+ * Contiene testo e possibili scelte.
+ */
 public class MissionStep {
 
     private final String text;
@@ -18,5 +22,9 @@ public class MissionStep {
 
     public List<MissionChoice> getChoices() {
         return choices;
+    }
+
+    public boolean hasChoices() {
+        return choices != null && !choices.isEmpty();
     }
 }
