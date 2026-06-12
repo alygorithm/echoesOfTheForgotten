@@ -6,20 +6,10 @@ import it.unicam.cs.mpgc.rpg122711.persistence.GamePersistence;
 import it.unicam.cs.mpgc.rpg122711.persistence.SaveData;
 import it.unicam.cs.mpgc.rpg122711.service.WorldService;
 import it.unicam.cs.mpgc.rpg122711.ui.*;
+
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/*
- * Controller principale del flusso di gioco.
- *
- * Responsabilità (SRP):
- * - gestione navigazione UI JavaFX
- * - orchestrazione dei sistemi di gioco (world, missioni, save)
- * - gestione stato sessione player
- *
- * Nota:
- * GameFlow è il punto di composizione tra dominio e infrastruttura.
- */
 public class GameFlow {
 
     private final Stage stage;
@@ -30,12 +20,14 @@ public class GameFlow {
     private final WorldService worldService = new WorldService();
     private final MissionManager missionManager = new MissionManager();
 
-    private int currentSlot = 1;
+    private int currentSlot = -1;
 
     public GameFlow(Stage stage, GamePersistence saveManager) {
         this.stage = stage;
         this.saveManager = saveManager;
     }
+
+    // ---------------- NAVIGATION ----------------
 
     public void start() {
         showMainMenu();
@@ -73,6 +65,8 @@ public class GameFlow {
         stage.show();
     }
 
+    // ---------------- PLAYER ----------------
+
     public void setPlayer(Player player) {
         this.player = player;
         missionManager.reset();
@@ -85,6 +79,8 @@ public class GameFlow {
     public WorldService getWorldService() {
         return worldService;
     }
+
+    // ---------------- MISSIONS ----------------
 
     public Mission getCurrentMission() {
         if (player == null) return null;
@@ -102,20 +98,12 @@ public class GameFlow {
         showGameStart();
     }
 
-    /*
-     * Salvataggio stato completo del gioco.
-     */
+    // ---------------- SAVE SYSTEM ----------------
+
     public SaveData toSaveData() {
         return saveManager.save(player, missionManager, worldService);
     }
 
-    /*
-     * Ripristino stato di gioco da salvataggio.
-     *
-     * Nota architetturale:
-     * - Player viene ricostruito qui (responsabilità del GameFlow)
-     * - SaveManager si occupa solo di world + progress
-     */
     public void loadFromSave(SaveData data) {
 
         this.player = new Player(
@@ -130,11 +118,25 @@ public class GameFlow {
         saveManager.load(data, missionManager, worldService);
     }
 
+    // ---------------- SLOT MANAGEMENT (FIX) ----------------
+
     public int getCurrentSlot() {
+
+        if (currentSlot < 1 || currentSlot > 3) {
+            throw new IllegalStateException("Slot non selezionato");
+        }
+
         return currentSlot;
     }
 
     public void setCurrentSlot(int slot) {
+        if (slot < 1 || slot > 3) {
+            throw new IllegalArgumentException("Slot non valido");
+        }
         this.currentSlot = slot;
+    }
+
+    public boolean hasSlotSelected() {
+        return currentSlot >= 1 && currentSlot <= 3;
     }
 }

@@ -18,7 +18,7 @@ import javafx.scene.layout.VBox;
  */
 public class LoadGameView {
 
-    private final VBox root = new VBox(15);
+    private final VBox root = new VBox(20);
     private final SaveService saveService;
 
     public LoadGameView(GameFlow gameFlow) {
@@ -26,31 +26,42 @@ public class LoadGameView {
         this.saveService = new SaveService();
 
         root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(20));
+        root.setPadding(new Insets(30));
+        root.getStyleClass().add("load-view");
 
         Label title = new Label("Carica Partita");
+        title.getStyleClass().add("load-title");
 
-        root.getChildren().addAll(
-                title,
-                createSlot(gameFlow, 1),
-                createSlot(gameFlow, 2),
-                createSlot(gameFlow, 3),
-                createBackButton(gameFlow)
-        );
+        root.getChildren().add(title);
+
+        for (int i = 1; i <= 3; i++) {
+            root.getChildren().add(createSlot(gameFlow, i));
+        }
+
+        root.getChildren().add(createBackButton(gameFlow));
     }
 
     private VBox createSlot(GameFlow gameFlow, int slot) {
 
         SaveData data = saveService.load(slot);
 
-        VBox box = new VBox(5);
-        box.setStyle("-fx-padding: 10; -fx-border-color: gray;");
+        VBox box = new VBox(8);
+        box.getStyleClass().add("save-slot");
+        box.setPadding(new Insets(12));
 
-        Label info = new Label(formatSlotInfo(slot, data));
+        Label title = new Label("Slot " + slot);
+        title.getStyleClass().add("slot-title");
 
-        Button loadBtn = new Button("Carica");
+        Label info = new Label(formatSlotInfo(data));
+        info.getStyleClass().add("slot-info");
+
+        Button loadBtn = new Button(data == null ? "Slot vuoto" : "Carica");
+        loadBtn.setMaxWidth(Double.MAX_VALUE);
+
+        loadBtn.setDisable(data == null);
 
         loadBtn.setOnAction(e -> {
+
             if (data == null) return;
 
             gameFlow.setCurrentSlot(slot);
@@ -58,24 +69,22 @@ public class LoadGameView {
             gameFlow.showGameStart();
         });
 
-        box.getChildren().addAll(info, loadBtn);
+        box.getChildren().addAll(title, info, loadBtn);
         return box;
     }
 
-    private String formatSlotInfo(int slot, SaveData data) {
+    private String formatSlotInfo(SaveData data) {
 
         if (data == null || data.player == null) {
-            return "Slot " + slot + " - Vuoto";
+            return "Nessun salvataggio presente";
         }
 
         return """
-                Slot %d
                 Player: %s
                 Classe: %s
                 Livello: %d
                 Anno: %d
                 """.formatted(
-                slot,
                 data.player.name,
                 data.player.characterClass,
                 data.player.level,
@@ -86,7 +95,10 @@ public class LoadGameView {
     private Button createBackButton(GameFlow gameFlow) {
 
         Button back = new Button("Torna indietro");
+        back.getStyleClass().add("back-btn");
+
         back.setOnAction(e -> gameFlow.showMainMenu());
+
         return back;
     }
 

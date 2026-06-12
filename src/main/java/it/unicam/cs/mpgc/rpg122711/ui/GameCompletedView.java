@@ -52,7 +52,6 @@ public class GameCompletedView {
 
     /*
      * SRP interno: styling UI pulsanti coerente tra le view.
-     * (meglio sarebbe una utility condivisa, ma qui resta locale)
      */
     private void applyButtonStyle(Button button) {
 

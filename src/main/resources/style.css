@@ -1,34 +1,51 @@
+/* -----
+ TEMA DI BASE
+ ----- */
+
 .root {
-    -fx-background-color: #1b1d24; /* blu notte freddo / memoria */
+    -fx-background-color: #1b1d24;
     -fx-font-family: "Georgia";
 }
 
-/* TESTO GENERALE */
+/* Testo globale */
 .label {
-    -fx-text-fill: #d8d7d2; /* pergamena fredda */
+    -fx-text-fill: #d8d7d2;
 }
 
-/* TESTO NARRATIVO */
-#missionText {
+/* -----
+ GAME VIEW
+ -----*/
+
+/* Testo missione */
+.mission-text {
     -fx-font-size: 16px;
     -fx-text-fill: #e6e5e0;
-    -fx-line-spacing: 5px;
-    -fx-padding: 10;
+    -fx-background-color: #1b1d24;
+    -fx-padding: 16;
+    -fx-control-inner-background: #1b1d24;
+    -fx-font-family: "Georgia";
+    -fx-line-spacing: 6px;
 }
 
-/* STATS (diario / HUD del viaggiatore) */
-#stats {
+/* HUD stats */
+.stats-panel {
     -fx-font-size: 12px;
     -fx-text-fill: #b9b8b2;
-    -fx-background-color: #232632; /* grigio-blu freddo */
+    -fx-background-color: #232632;
     -fx-padding: 12;
     -fx-border-color: #3a3f52;
     -fx-border-width: 1;
 }
 
-/* BOTTONI SCELTA */
+/* Contenitore scelte */
+.choice-box {
+    -fx-spacing: 10;
+    -fx-padding: 10;
+}
+
+/* Bottoni base */
 .button {
-    -fx-background-color: #2a2f3d; /* blu desaturato */
+    -fx-background-color: #2a2f3d;
     -fx-text-fill: #e6e5e0;
     -fx-border-color: #3f445a;
     -fx-border-width: 1;
@@ -42,50 +59,38 @@
     -fx-cursor: hand;
 }
 
-/* CONTENITORI SCELTE */
-.vbox {
-    -fx-spacing: 10;
-}
-
-/* SPAZIATURE GENERALI */
+/* Spaziature layout */
 .border-pane {
     -fx-padding: 20;
 }
 
-/* =====
-MENU PRINCIPALE
- ===== */
+/* -----
+ MAIN MENU
+ -----*/
 
 #mainMenu {
     -fx-background-image: url("images/mainMenu_background.png");
     -fx-background-size: cover;
     -fx-background-position: center center;
-}
-
-#mainMenu {
     -fx-background-color: rgba(0,0,0,0.35);
 }
 
-/* TITOLO */
+/* Titoli menu */
 .main-title {
     -fx-font-size: 64px;
-    -fx-font-family: "Georgia";
     -fx-text-fill: #e5dac1;
     -fx-font-weight: bold;
-    -fx-letter-spacing: 4px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 12, 0.3, 0, 4);
 }
 
 .sub-title {
     -fx-font-size: 22px;
-    -fx-font-family: "Georgia";
     -fx-text-fill: #e0d6bf;
     -fx-opacity: 0.9;
-    -fx-letter-spacing: 2px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 6, 0.3, 0, 2);
 }
 
-/* PULSANTI */
+/* Bottoni menu */
 .menu-btn {
     -fx-background-color: linear-gradient(to bottom, #221f1d, #141211);
     -fx-text-fill: #d1c2a5;
@@ -95,31 +100,17 @@ MENU PRINCIPALE
     -fx-border-color: #3d352e;
     -fx-border-width: 2;
     -fx-cursor: hand;
-
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0.3, 0, 3);
 }
 
 .menu-btn:hover {
     -fx-text-fill: white;
     -fx-border-color: #8c765c;
-    -fx-effect: dropshadow(gaussian, rgba(217,179,129,0.4), 12, 0.3, 0, 0);
 }
 
-/* VIGNETTE */
-.vignette {
-    -fx-background-color: radial-gradient(
-        center 50% 50%,
-        radius 80%,
-        transparent,
-        rgba(0,0,0,0.7)
-    );
-}
-
-.menu-container {
-    -fx-spacing: 15;
-    -fx-alignment: center;
-}
-
+/* -----
+SCENE
+-----*/
 
 #prologueView {
     -fx-background-image: url("images/prologue_background.png");
@@ -133,8 +124,26 @@ MENU PRINCIPALE
     -fx-background-position: center center;
 }
 
-/* GAME COMPLETED VIEW */
+/* Fine gioco */
 #title {
     -fx-font-size: 36px;
     -fx-font-weight: bold;
+}
+
+/* -----
+ EFFETTI
+ -----*/
+
+.vignette {
+    -fx-background-color: radial-gradient(
+        center 50% 50%,
+        radius 80%,
+        transparent,
+        rgba(0,0,0,0.7)
+    );
+}
+
+.menu-container {
+    -fx-spacing: 15;
+    -fx-alignment: center;
 }

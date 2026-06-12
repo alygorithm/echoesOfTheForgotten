@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.ChoiceDialog;
 
 import java.util.List;
 
@@ -24,13 +25,13 @@ public class GameView {
     private final BorderPane root = new BorderPane();
 
     private Mission currentMission;
-    private MissionStep currentStep;
 
     private final TextArea storyArea = new TextArea();
     private final TextArea statsArea = new TextArea();
     private final VBox choicesBox = new VBox(10);
 
     public GameView(GameFlow gameFlow) {
+
         this.gameFlow = gameFlow;
         this.player = gameFlow.getPlayer();
         this.worldService = gameFlow.getWorldService();
@@ -58,10 +59,15 @@ public class GameView {
 
         storyArea.setWrapText(true);
         storyArea.setEditable(false);
+        storyArea.setPrefWidth(650);
 
         statsArea.setWrapText(true);
         statsArea.setEditable(false);
-        statsArea.setMinWidth(220);
+        statsArea.setPrefWidth(220);
+
+        storyArea.getStyleClass().add("mission-text");
+        statsArea.getStyleClass().add("stats-panel");
+        choicesBox.getStyleClass().add("choice-box");
 
         root.setTop(topBar);
         root.setCenter(storyArea);
@@ -72,18 +78,54 @@ public class GameView {
         BorderPane.setMargin(statsArea, new Insets(10));
     }
 
-    // ---------------- SAVE / LOAD ----------------
+    // ---------------- SAVE ----------------
 
     private void saveGame() {
+
+        if (!gameFlow.hasSlotSelected()) {
+            chooseSlotAndSave();
+            return;
+        }
+
         SaveData data = gameFlow.toSaveData();
         saveService.save(data, gameFlow.getCurrentSlot());
     }
 
+    private void chooseSlotAndSave() {
+
+        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(1, 1, 2, 3);
+        dialog.setTitle("Salvataggio");
+        dialog.setHeaderText("Seleziona uno slot di salvataggio");
+        dialog.setContentText("Slot:");
+
+        dialog.showAndWait().ifPresent(slot -> {
+            gameFlow.setCurrentSlot(slot);
+            saveGame();
+        });
+    }
+
+    private void showSlotDialog() {
+
+        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(1, 1, 2, 3);
+        dialog.setTitle("Salvataggio");
+        dialog.setHeaderText("Seleziona slot di salvataggio");
+        dialog.setContentText("Slot:");
+
+        dialog.showAndWait().ifPresent(slot -> {
+            gameFlow.setCurrentSlot(slot);
+            saveGame();
+        });
+    }
+
+    // ---------------- LOAD ----------------
+
     private void loadGame() {
+
         SaveData data = saveService.load(gameFlow.getCurrentSlot());
         if (data == null) return;
 
         gameFlow.loadFromSave(data);
+
         loadMission();
         refreshUI();
     }
@@ -100,9 +142,7 @@ public class GameView {
 
     private void loadStep(MissionStep step) {
 
-        currentStep = step;
-
-        storyArea.setText(buildStoryText(step));
+        storyArea.setText(step.getText());
 
         choicesBox.getChildren().clear();
 
@@ -122,6 +162,7 @@ public class GameView {
 
         Button btn = new Button("Continua");
         btn.setMaxWidth(Double.MAX_VALUE);
+        btn.setPrefHeight(45);
 
         btn.setOnAction(e -> {
             worldService.advanceAfterMission();
@@ -137,6 +178,7 @@ public class GameView {
 
         Button btn = new Button(choice.getLabel());
         btn.setMaxWidth(Double.MAX_VALUE);
+        btn.setPrefHeight(45);
 
         btn.setOnAction(e -> {
 
@@ -159,55 +201,33 @@ public class GameView {
         choicesBox.getChildren().add(btn);
     }
 
-    // ---------------- TEXT RENDERING ----------------
-
-    private String buildStoryText(MissionStep step) {
-        return """
-                %s
-
-                === %s ===
-
-                %s
-                """.formatted(
-                buildWorldHeader(),
-                currentMission.getTitle(),
-                step.getText()
-        );
-    }
-
-    private String buildWorldHeader() {
-        return """
-                WORLD
-                Year: %d
-                Instability: %d
-                """.formatted(
-                worldService.getState().getYear(),
-                worldService.getState().getInstability()
-        );
-    }
+    // ---------------- UI ----------------
 
     private void refreshUI() {
         statsArea.setText(buildStatsText());
     }
 
     private String buildStatsText() {
+
         return """
-                PLAYER
+                ╔══ GIOCATORE ══╗
+
                 %s
                 %s
 
                 HP: %d
                 Mana: %d
-                Level: %d
+                Livello: %d
                 XP: %d
 
-                WORLD
-                Year: %d
-                Instability: %d
-                Flags: %d
+                ╔══ MONDO ══╗
+
+                Anno: %d
+                Instabilità: %d
+                Eventi: %d
                 """.formatted(
                 player.getName(),
-                player.getCharacterClass(),
+                player.getCharacterClass().getLabel(),
                 player.getHp(),
                 player.getMana(),
                 player.getLevel(),
@@ -217,8 +237,6 @@ public class GameView {
                 worldService.getMemory().getAll().size()
         );
     }
-
-
 
     public BorderPane getRoot() {
         return root;

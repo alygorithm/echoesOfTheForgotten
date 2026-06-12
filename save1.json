@@ -3,7 +3,7 @@
     "name": "Aly",
     "characterClass": "ARCANIST",
     "level": 1,
-    "experience": 0,
+    "experience": 10,
     "hp": 80,
     "mana": 120
   },
@@ -14,5 +14,8 @@
     "year": 1024,
     "instability": 0
   },
-  "events": []
+  "events": [
+    "ENTERED_CHURCH",
+    "DIARY_FOUND"
+  ]
 }
