@@ -1,49 +1,61 @@
-/* -----
- TEMA DI BASE
- ----- */
+/* --------------------
+   TEMA DI BASE
+-------------------- */
 
 .root {
     -fx-background-color: #1b1d24;
     -fx-font-family: "Georgia";
 }
 
-/* Testo globale */
 .label {
     -fx-text-fill: #d8d7d2;
 }
 
-/* -----
- GAME VIEW
- -----*/
+/* --------------------
+   GAME VIEW & TEXT AREAS
+-------------------- */
 
-/* Testo missione */
 .mission-text {
     -fx-font-size: 16px;
-    -fx-text-fill: #e6e5e0;
-    -fx-background-color: #1b1d24;
-    -fx-padding: 16;
-    -fx-control-inner-background: #1b1d24;
+    -fx-text-fill: #e5dac1;
     -fx-font-family: "Georgia";
     -fx-line-spacing: 6px;
 }
 
-/* HUD stats */
 .stats-panel {
-    -fx-font-size: 12px;
-    -fx-text-fill: #b9b8b2;
-    -fx-background-color: #232632;
-    -fx-padding: 12;
-    -fx-border-color: #3a3f52;
+    -fx-font-size: 13px;
+    -fx-text-fill: #bfae93;
+    -fx-font-family: "Georgia";
+}
+
+/* Rimuove i bordi e gli sfondi nativi di JavaFX dalle TextArea del gioco */
+.text-area {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.text-area .content {
+    -fx-background-color: rgba(20, 18, 17, 0.82);
+    -fx-background-radius: 6;
+    -fx-border-color: #3d352e;
     -fx-border-width: 1;
+    -fx-border-radius: 6;
 }
 
-/* Contenitore scelte */
+.text-area .viewport {
+    -fx-background-color: transparent;
+}
+
 .choice-box {
-    -fx-spacing: 10;
-    -fx-padding: 10;
+    -fx-spacing: 12;
+    -fx-padding: 15;
+    -fx-background-color: transparent;
 }
 
-/* Bottoni base */
+/* --------------------
+   BOTTONI PREDEFINITI E SCROLLBAR
+-------------------- */
+
 .button {
     -fx-background-color: #2a2f3d;
     -fx-text-fill: #e6e5e0;
@@ -52,6 +64,7 @@
     -fx-background-radius: 6;
     -fx-border-radius: 6;
     -fx-padding: 8 14;
+    -fx-font-family: "Georgia";
 }
 
 .button:hover {
@@ -59,38 +72,47 @@
     -fx-cursor: hand;
 }
 
-/* Spaziature layout */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Personalizzazione minimale delle barre di scorrimento in stile dark */
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+}
+.scroll-bar .thumb {
+    -fx-background-color: #3d352e;
+    -fx-background-radius: 4;
+}
+.scroll-bar .thumb:hover {
+    -fx-background-color: #8c765c;
+}
+
+/* --------------------
+   STRUTTURE DI LAYOUT
+-------------------- */
+
 .border-pane {
+    -fx-background-color: transparent;
     -fx-padding: 20;
 }
 
-/* -----
- MAIN MENU
- -----*/
-
-#mainMenu {
-    -fx-background-image: url("images/mainMenu_background.png");
-    -fx-background-size: cover;
-    -fx-background-position: center center;
-    -fx-background-color: rgba(0,0,0,0.35);
+.vbox {
+    -fx-background-color: transparent;
 }
 
-/* Titoli menu */
-.main-title {
-    -fx-font-size: 64px;
-    -fx-text-fill: #e5dac1;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 12, 0.3, 0, 4);
+.hbox {
+    -fx-background-color: transparent;
 }
 
-.sub-title {
-    -fx-font-size: 22px;
-    -fx-text-fill: #e0d6bf;
-    -fx-opacity: 0.9;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 6, 0.3, 0, 2);
-}
+/* --------------------
+   STILI DI INTERFACCIA COMUNI (GDR STYLE)
+-------------------- */
 
-/* Bottoni menu */
 .menu-btn {
     -fx-background-color: linear-gradient(to bottom, #221f1d, #141211);
     -fx-text-fill: #d1c2a5;
@@ -108,9 +130,74 @@
     -fx-border-color: #8c765c;
 }
 
-/* -----
-SCENE
------*/
+/* --------------------
+   MAIN MENU
+-------------------- */
+
+#mainMenu {
+    -fx-background-image: url("images/mainMenu_background.png");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-color: rgba(0,0,0,0.35);
+}
+
+.main-title {
+    -fx-font-size: 64px;
+    -fx-text-fill: #e5dac1;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 12, 0.3, 0, 4);
+}
+
+.sub-title {
+    -fx-font-size: 22px;
+    -fx-text-fill: #e0d6bf;
+    -fx-opacity: 0.9;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 6, 0.3, 0, 2);
+}
+
+/* --------------------
+   LOAD GAME VIEW
+-------------------- */
+
+#loadGameView {
+    -fx-background-image: url("images/mainMenu_background.png");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
+.load-title {
+    -fx-font-size: 32px;
+    -fx-text-fill: #e5dac1;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 8, 0.3, 0, 2);
+}
+
+.slot-card {
+    -fx-background-color: rgba(20, 18, 17, 0.85);
+    -fx-background-radius: 6;
+    -fx-border-color: #3d352e;
+    -fx-border-width: 2;
+    -fx-padding: 20;
+}
+
+.slot-card-empty {
+    -fx-background-color: rgba(20, 18, 17, 0.5);
+    -fx-background-radius: 6;
+    -fx-border-color: #2d2722;
+    -fx-border-width: 2;
+    -fx-padding: 20;
+    -fx-opacity: 0.6;
+}
+
+.slot-info-text {
+    -fx-text-fill: #bfae93;
+    -fx-font-size: 14px;
+    -fx-line-spacing: 5px;
+}
+
+/* --------------------
+   PROLOGUE VIEW
+-------------------- */
 
 #prologueView {
     -fx-background-image: url("images/prologue_background.png");
@@ -118,21 +205,85 @@ SCENE
     -fx-background-position: center center;
 }
 
+.prologue-box {
+    -fx-background-color: rgba(20, 18, 17, 0.75);
+    -fx-padding: 40;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(61, 53, 46, 0.6);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 0);
+}
+
+.prologue-hint {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8c765c;
+    -fx-font-style: italic;
+}
+
+/* --------------------
+   CHARACTER CREATION VIEW
+-------------------- */
+
 #creationView {
     -fx-background-image: url("images/creationView-background.png");
     -fx-background-size: cover;
     -fx-background-position: center center;
 }
 
-/* Fine gioco */
+.creation-title {
+    -fx-font-size: 32px;
+    -fx-text-fill: #e5dac1;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 8, 0.3, 0, 2);
+}
+
+.creation-box {
+    -fx-background-color: rgba(20, 18, 17, 0.85);
+    -fx-padding: 30;
+    -fx-background-radius: 6;
+    -fx-border-color: #3d352e;
+    -fx-border-width: 2;
+}
+
+.creation-input {
+    -fx-background-color: #141211;
+    -fx-text-fill: #e6e5e0;
+    -fx-border-color: #3d352e;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8;
+    -fx-font-family: "Georgia";
+}
+
+.creation-input:focused {
+    -fx-border-color: #8c765c;
+}
+
+.class-desc-text {
+    -fx-text-fill: #bfae93;
+    -fx-font-size: 14px;
+    -fx-line-spacing: 4px;
+}
+
+.error-label {
+    -fx-text-fill: #c96a6a;
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
+}
+
+/* --------------------
+   FINE GIOCO
+-------------------- */
+
 #title {
     -fx-font-size: 36px;
     -fx-font-weight: bold;
 }
 
-/* -----
- EFFETTI
- -----*/
+/* --------------------
+   EFFETTI E COMPONENTI AVANZATI
+-------------------- */
 
 .vignette {
     -fx-background-color: radial-gradient(

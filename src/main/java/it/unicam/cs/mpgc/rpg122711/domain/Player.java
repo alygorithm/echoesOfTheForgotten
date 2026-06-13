@@ -1,15 +1,10 @@
 package it.unicam.cs.mpgc.rpg122711.domain;
 
-/*
- * Entità che rappresenta il giocatore.
- *
- * Responsabilità (SRP):
- * - mantenere lo stato del player (HP, mana, livello, esperienza)
- * - gestire la progressione base (level up)
- *
- * Nota:
- * Questa classe è una domain entity e contiene logica minima
- * legata esclusivamente al modello del personaggio.
+/**
+ * Entità di dominio che rappresenta il personaggio del giocatore.
+ * Gestisce: i dati anagrafici + parametri vitali in base alla classe
+ * + la logica interna di progresisone che viene levata ai punti di esperienza
+ * e all'aumento di livello.
  */
 public class Player {
 

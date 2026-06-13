@@ -1,10 +1,10 @@
 package it.unicam.cs.mpgc.rpg122711.domain.mission;
-
 import java.util.List;
 
-/*
- * Nodo narrativo della missione.
- * Contiene testo e possibili scelte.
+
+/**
+ * Rappresenta un singolo nodo narrativo all'interno di una missione.
+ * Contiene il testo descrittivo dello scenario corrente e l'elenco delle scelte possibili.
  */
 public class MissionStep {
 

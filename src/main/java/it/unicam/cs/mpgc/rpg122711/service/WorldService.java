@@ -1,20 +1,12 @@
 package it.unicam.cs.mpgc.rpg122711.service;
-
 import it.unicam.cs.mpgc.rpg122711.domain.world.EventType;
 import it.unicam.cs.mpgc.rpg122711.domain.world.WorldMemory;
 import it.unicam.cs.mpgc.rpg122711.domain.world.WorldState;
 
 /**
- * Servizio di coordinamento del mondo di gioco.
- *
- * Responsabilità (SRP):
- * - gestione dello stato globale del mondo
- * - gestione della memoria degli eventi
- * - applicazione delle regole base di evoluzione del mondo
- *
- * Nota:
- * Le regole sono volutamente semplici ma centralizzate
- * per mantenere controllo sulla narrativa globale.
+ * Servizio di coordinamento e gestione dello stato del mondo di gioco.
+ * Centralizza la registrazione degli eventi narrativi, l'evoluzione temporale
+ * e l'applicazione delle regole globali come il calcolo dell'instabilità.
  */
 public class WorldService {
 

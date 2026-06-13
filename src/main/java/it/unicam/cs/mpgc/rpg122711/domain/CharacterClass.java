@@ -1,8 +1,8 @@
 package it.unicam.cs.mpgc.rpg122711.domain;
 
-/*
- * Enum che rappresenta le classi del giocatore.
- * Responsabilità: definire il tipo di personaggio (SRP).
+/**
+ * Definisce le classi selezionabili dal giocatore per il proprio personaggio,
+ * associando a ciacun "tipo" una stringa descrittiva per l'interfaccia.
  */
 public enum CharacterClass {
     ARCANIST("Arcano"),

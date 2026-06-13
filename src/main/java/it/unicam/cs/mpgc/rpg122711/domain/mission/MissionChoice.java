@@ -2,9 +2,10 @@ package it.unicam.cs.mpgc.rpg122711.domain.mission;
 
 import java.util.function.Consumer;
 
-/*
- * Rappresenta una scelta narrativa.
- * Incapsula effetto e transizione tra stati narrativi.
+/**
+ * Rappresenta la singola opzione di scelta all'interno di un MissionStep.
+ * Incapsula il testo descrittivo della scelta, l'effetto sul contesto di gioco
+ * ed il riferimento allo step successivo.
  */
 public class MissionChoice {
 

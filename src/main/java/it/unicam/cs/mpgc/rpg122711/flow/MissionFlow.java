@@ -1,11 +1,11 @@
 package it.unicam.cs.mpgc.rpg122711.flow;
-
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.domain.mission.Mission;
 
 /**
- * Gestisce la progressione delle missioni.
- * Responsabilità: controllare stato e avanzamento del flusso narrativo.
+ * Interfaccia utilizzata per controllare la progressione narrativa.
+ * Definisce i metodi necessari per costruire la missione corrente, avanzare,
+ * verificare la conclusione della storia e resettare lo stato.
  */
 public interface MissionFlow {
     Mission build(Player player);

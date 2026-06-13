@@ -4,17 +4,6 @@ import it.unicam.cs.mpgc.rpg122711.content.MissionContent;
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.domain.mission.Mission;
 
-/*
- * Implementazione concreta del flusso missioni.
- *
- * Responsabilità (SRP):
- * - gestire lo stato di avanzamento delle missioni
- * - costruire la missione corrente in base all'indice
- *
- * Nota architetturale:
- * Il flusso è lineare e hardcoded tramite MissionContent.
- * Questo è accettabile per un RPG narrativo a struttura fissa.
- */
 public class MissionManager implements MissionFlow {
 
     private static final int LAST_MISSION = 7;
@@ -23,16 +12,10 @@ public class MissionManager implements MissionFlow {
 
     @Override
     public Mission build(Player player) {
-        return switch (currentMissionIndex) {
-            case 1 -> MissionContent.firstMission(player);
-            case 2 -> MissionContent.secondMission(player);
-            case 3 -> MissionContent.thirdMission(player);
-            case 4 -> MissionContent.fourthMission(player);
-            case 5 -> MissionContent.fifthMission(player);
-            case 6 -> MissionContent.sixthMission(player);
-            case 7 -> MissionContent.seventhMission(player);
-            default -> null;
-        };
+        if (isFinished()) {
+            return null;
+        }
+        return MissionContent.getMission(currentMissionIndex, player);
     }
 
     @Override
@@ -56,5 +39,17 @@ public class MissionManager implements MissionFlow {
 
     public void setCurrentMissionIndex(int index) {
         this.currentMissionIndex = index;
+    }
+
+    public String getMissionName(int index, Player contextPlayer) {
+        try {
+            Mission temp = MissionContent.getMission(index, contextPlayer);
+            if (temp != null) {
+                return temp.getTitle();
+            }
+        } catch (Exception e) {
+            return "Missione " + index;
+        }
+        return "Missione " + index;
     }
 }

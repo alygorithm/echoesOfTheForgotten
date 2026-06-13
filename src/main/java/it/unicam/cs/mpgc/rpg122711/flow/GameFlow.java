@@ -1,33 +1,40 @@
 package it.unicam.cs.mpgc.rpg122711.flow;
-
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.domain.mission.Mission;
 import it.unicam.cs.mpgc.rpg122711.persistence.GamePersistence;
 import it.unicam.cs.mpgc.rpg122711.persistence.SaveData;
+import it.unicam.cs.mpgc.rpg122711.persistence.SaveService;
 import it.unicam.cs.mpgc.rpg122711.service.WorldService;
 import it.unicam.cs.mpgc.rpg122711.ui.*;
-
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * E' il controller principale del flusso di gioco.
+ * Permette di coordinare il passaggio visivo tra le schermate dell'interfaccia,
+ * gestire il ciclo di vita delle missioni e di interfacciare la persistenza per i salvataggi.
+ */
 public class GameFlow {
 
     private final Stage stage;
     private final GamePersistence saveManager;
+    private final SaveService saveService = new SaveService();
 
+    private Scene scene;
     private Player player;
 
     private final WorldService worldService = new WorldService();
     private final MissionManager missionManager = new MissionManager();
 
-    private int currentSlot = -1;
+    private Integer currentSlot = null;
 
     public GameFlow(Stage stage, GamePersistence saveManager) {
         this.stage = stage;
         this.saveManager = saveManager;
     }
-
-    // ---------------- NAVIGATION ----------------
 
     public void start() {
         showMainMenu();
@@ -57,15 +64,19 @@ public class GameFlow {
         setScene(new GameCompletedView(this).getRoot());
     }
 
-    private void setScene(javafx.scene.Parent root) {
-        Scene scene = new Scene(root, 800, 600);
-        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
-        stage.setScene(scene);
+    private void setScene(Parent root) {
+        if (scene == null) {
+            scene = new Scene(root, 800, 600);
+            scene.getStylesheets().add(
+                    getClass().getResource("/style.css").toExternalForm()
+            );
+            stage.setScene(scene);
+        } else {
+            scene.setRoot(root);
+        }
         stage.setTitle("RPG");
         stage.show();
     }
-
-    // ---------------- PLAYER ----------------
 
     public void setPlayer(Player player) {
         this.player = player;
@@ -80,7 +91,9 @@ public class GameFlow {
         return worldService;
     }
 
-    // ---------------- MISSIONS ----------------
+    public MissionManager getMissionManager() {
+        return missionManager;
+    }
 
     public Mission getCurrentMission() {
         if (player == null) return null;
@@ -89,54 +102,74 @@ public class GameFlow {
 
     public void nextMission() {
         missionManager.next();
-
         if (missionManager.isFinished()) {
             showGameCompleted();
             return;
         }
-
         showGameStart();
     }
 
-    // ---------------- SAVE SYSTEM ----------------
+    public boolean saveExists(int slot) {
+        return saveService.exists(slot);
+    }
 
-    public SaveData toSaveData() {
-        return saveManager.save(player, missionManager, worldService);
+    public List<Integer> getOccupiedSlots() {
+        List<Integer> occupied = new ArrayList<>();
+        for (int i = 1; i <= 3; i++) {
+            if (saveService.exists(i)) {
+                occupied.add(i);
+            }
+        }
+        return occupied;
+    }
+
+    public void executeSave(int slot) {
+        this.currentSlot = slot;
+        SaveData data = saveManager.save(player, missionManager, worldService);
+        saveService.save(data, slot);
+    }
+
+    public boolean executeLoad(int slot) {
+        SaveData data = saveService.load(slot);
+        if (data != null) {
+            this.currentSlot = slot;
+            loadFromSave(data);
+            return true;
+        }
+        return false;
     }
 
     public void loadFromSave(SaveData data) {
-
         this.player = new Player(
                 data.player.name,
                 data.player.characterClass
         );
-
         for (int i = 1; i < data.player.level; i++) {
             player.gainExperience(100);
         }
-
         saveManager.load(data, missionManager, worldService);
     }
 
-    // ---------------- SLOT MANAGEMENT (FIX) ----------------
-
     public int getCurrentSlot() {
-
-        if (currentSlot < 1 || currentSlot > 3) {
+        if (currentSlot == null) {
             throw new IllegalStateException("Slot non selezionato");
         }
-
         return currentSlot;
     }
 
+    public boolean hasSlotSelected() {
+        return currentSlot != null;
+    }
+
     public void setCurrentSlot(int slot) {
-        if (slot < 1 || slot > 3) {
-            throw new IllegalArgumentException("Slot non valido");
-        }
         this.currentSlot = slot;
     }
 
-    public boolean hasSlotSelected() {
-        return currentSlot >= 1 && currentSlot <= 3;
+    public void startGameFromLoad() {
+        showGameStart();
+    }
+
+    public String getMissionName(int index, Player contextPlayer) {
+        return missionManager.getMissionName(index, contextPlayer);
     }
 }

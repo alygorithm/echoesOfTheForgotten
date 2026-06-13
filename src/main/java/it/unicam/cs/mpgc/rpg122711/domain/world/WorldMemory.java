@@ -1,12 +1,11 @@
 package it.unicam.cs.mpgc.rpg122711.domain.world;
-
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/*
- * Memoria eventi del mondo.
- * Responsabilità: gestione eventi narrativi.
+/**
+ * Registro persistente degli eventi e delle decisioni avvenute nel mondo.
+ * Permette di mantenere l'ordine cornologico degli eventi e ne impedisce la duplicazione.
  */
 public class WorldMemory {
 

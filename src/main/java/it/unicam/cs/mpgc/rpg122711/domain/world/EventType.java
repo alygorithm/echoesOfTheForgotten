@@ -1,12 +1,11 @@
 package it.unicam.cs.mpgc.rpg122711.domain.world;
 
 /**
- * Eventi di gioco utilizzati per tracciare la progressione narrativa.
- * Ogni evento rappresenta un fatto irripetibile nel mondo.
+ * Enumerazione degli eventi di gioco cardine utilizzati per poi
+ * tracciare la progressione storica e le scelte narrative del giocatore.
  */
 public enum EventType {
 
-    // MISSIONE 1
     ENTERED_RUINS,
     ENTERED_CHURCH,
     DIARY_FOUND,
@@ -14,15 +13,14 @@ public enum EventType {
     DISTORTION_ANALYZED,
     TRACKS_FOLLOWED,
 
-    // MISSIONE 2
     FOREST_OBSERVED,
     FOREST_ANALYZED,
     FOREST_TRAVERSED,
     ECHO_FOLLOWED,
     MEMORY_CONTACT,
 
-    // MISSIONE 3
     SANCTUARY_DISCOVERED,
+    SANCTUARY_EXPLORED,
     MEMORY_CORE_FOUND,
 
     CUSTODIAN_MENTIONED,
@@ -34,11 +32,9 @@ public enum EventType {
     MEMORY_STORAGE_DISCOVERED,
     MEMORY_ARCHIVE_OBSERVED,
 
-    // MISSIONE 4
     LIBRARY_FOUND,
     OBLIVION_BREACH,
 
-    // FINALE
     OBLIVION_TRUTH_REVEALED,
     OBLIVION_PATH_WALKED
 }

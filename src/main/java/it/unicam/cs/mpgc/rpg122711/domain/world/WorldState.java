@@ -1,8 +1,8 @@
 package it.unicam.cs.mpgc.rpg122711.domain.world;
 
-/*
- * Stato globale del mondo.
- * Gestisce tempo e instabilità narrativa.
+/**
+ * Va a gestire lo stato globale + le variabili ambientali del mondo di gioco,
+ * lo fa tracciando l'avanzamento cronologico del tempo ed il livello di instabilità narrativa (funzionalità non del tutto implementata).
  */
 public class WorldState {
 

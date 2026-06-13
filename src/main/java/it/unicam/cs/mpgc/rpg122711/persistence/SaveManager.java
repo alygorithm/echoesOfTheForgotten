@@ -1,26 +1,18 @@
 package it.unicam.cs.mpgc.rpg122711.persistence;
-
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.service.WorldService;
 import it.unicam.cs.mpgc.rpg122711.flow.MissionManager;
-
 import java.util.LinkedHashSet;
 
 /**
- * Implementazione della persistenza dello stato di gioco.
- *
- * Responsabilità (SRP):
- * - serializzazione del game state
- * - deserializzazione di world + progressione
- *
- * Nota:
- * La ricostruzione del Player è responsabilità del GameFlow.
+ * Implementazione del sistema di persistenza (Save/load).
+ * Si occupa di mappare lo stato live dei vari componenti di gioco
+ * verso l'oggetto serializzabile SaveData e viceversa.
  */
 public class SaveManager implements GamePersistence {
 
     @Override
     public SaveData save(Player player, MissionManager mm, WorldService ws) {
-
         SaveData data = new SaveData();
 
         data.player = new SaveData.PlayerData();
@@ -45,12 +37,9 @@ public class SaveManager implements GamePersistence {
 
     @Override
     public void load(SaveData data, MissionManager mm, WorldService ws) {
-
         mm.setCurrentMissionIndex(data.progress.currentMissionIndex);
-
         ws.getState().setYear(data.world.year);
         ws.getState().setInstability(data.world.instability);
-
         ws.getMemory().setAll(new LinkedHashSet<>(data.events));
     }
 }

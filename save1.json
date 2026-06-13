@@ -2,20 +2,29 @@
   "player": {
     "name": "Aly",
     "characterClass": "ARCANIST",
-    "level": 1,
-    "experience": 10,
-    "hp": 80,
-    "mana": 120
+    "level": 3,
+    "experience": 20,
+    "hp": 100,
+    "mana": 150
   },
   "progress": {
-    "currentMissionIndex": 1
+    "currentMissionIndex": 7
   },
   "world": {
-    "year": 1024,
+    "year": 1030,
     "instability": 0
   },
   "events": [
-    "ENTERED_CHURCH",
-    "DIARY_FOUND"
+    "ENTERED_RUINS",
+    "RUNES_READ",
+    "FOREST_OBSERVED",
+    "FOREST_ANALYZED",
+    "SANCTUARY_DISCOVERED",
+    "MEMORY_CORE_FOUND",
+    "CUSTODIAN_MAGIC_DISCOVERED",
+    "CUSTODIAN_REVEAL",
+    "LIBRARY_FOUND",
+    "OBLIVION_BREACH",
+    "MEMORY_ARCHIVE_OBSERVED"
   ]
 }

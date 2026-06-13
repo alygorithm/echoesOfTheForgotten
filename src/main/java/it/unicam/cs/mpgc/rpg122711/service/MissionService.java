@@ -1,18 +1,11 @@
 package it.unicam.cs.mpgc.rpg122711.service;
-
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.domain.mission.Mission;
 
 /**
- * Servizio responsabile dell'applicazione degli effetti
- * derivanti dal completamento di una missione.
- *
- * Responsabilità (SRP):
- * - applicazione reward al player
- *
- * Nota:
- * Attualmente gestisce solo esperienza, ma è estendibile
- * a ulteriori effetti (OCP-friendly).
+ * Servizio logico utilizzato per la gestione degli effetti di completamento delle missioni.
+ * Permette di applicare le ricompense maturate (exp) al ersonaggio isolando
+ * la logica di reward dal modello dei dati.
  */
 public class MissionService {
 

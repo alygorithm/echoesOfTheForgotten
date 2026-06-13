@@ -1,5 +1,4 @@
 package it.unicam.cs.mpgc.rpg122711.ui;
-
 import it.unicam.cs.mpgc.rpg122711.flow.GameFlow;
 import it.unicam.cs.mpgc.rpg122711.persistence.SaveData;
 import it.unicam.cs.mpgc.rpg122711.persistence.SaveService;
@@ -7,98 +6,123 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-/*
- * View di selezione salvataggi.
- *
- * Responsabilità:
- * - mostrare slot di salvataggio
- * - delegare caricamento a GameFlow
+/**
+ * Vista JavaFX dedicata alla schermata di caricamento dei vari salvataggi.
+ * Genera e permette di visualizzare in modo dinamico le schede descrittive per ciascuno slot
+ * di gioco, andando a mostrare i metadati del personaggio e della missione corrente (se presenti).
  */
 public class LoadGameView {
 
-    private final VBox root = new VBox(20);
-    private final SaveService saveService;
+    private final VBox root = new VBox(40);
+    private final SaveService saveService = new SaveService();
 
     public LoadGameView(GameFlow gameFlow) {
-
-        this.saveService = new SaveService();
-
         root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(30));
-        root.getStyleClass().add("load-view");
+        root.setPadding(new Insets(40));
+        root.setId("loadGameView");
 
-        Label title = new Label("Carica Partita");
+        Label title = new Label("CARICA PARTITA");
         title.getStyleClass().add("load-title");
 
-        root.getChildren().add(title);
+        HBox slotsContainer = new HBox(20);
+        slotsContainer.setAlignment(Pos.CENTER);
+        slotsContainer.getChildren().addAll(
+                createSlot(gameFlow, 1),
+                createSlot(gameFlow, 2),
+                createSlot(gameFlow, 3)
+        );
 
-        for (int i = 1; i <= 3; i++) {
-            root.getChildren().add(createSlot(gameFlow, i));
-        }
-
-        root.getChildren().add(createBackButton(gameFlow));
+        root.getChildren().addAll(
+                title,
+                slotsContainer,
+                createBackButton(gameFlow)
+        );
     }
 
     private VBox createSlot(GameFlow gameFlow, int slot) {
-
         SaveData data = saveService.load(slot);
 
-        VBox box = new VBox(8);
-        box.getStyleClass().add("save-slot");
-        box.setPadding(new Insets(12));
+        VBox box = new VBox(15);
+        box.setPrefWidth(240);
+        box.setPrefHeight(320);
+        box.setAlignment(Pos.TOP_CENTER);
 
-        Label title = new Label("Slot " + slot);
-        title.getStyleClass().add("slot-title");
+        if (data == null) {
+            box.getStyleClass().add("slot-card-empty");
+        } else {
+            box.getStyleClass().add("slot-card");
+        }
 
-        Label info = new Label(formatSlotInfo(data));
-        info.getStyleClass().add("slot-info");
+        Label info = new Label(formatSlotInfo(slot, data, gameFlow));
+        info.getStyleClass().add("slot-info-text");
+        info.setWrapText(true);
+        info.setMaxWidth(210);
 
-        Button loadBtn = new Button(data == null ? "Slot vuoto" : "Carica");
-        loadBtn.setMaxWidth(Double.MAX_VALUE);
+        Button loadBtn = new Button(data == null ? "Vuoto" : "Carica");
+        loadBtn.getStyleClass().add("menu-btn");
+        loadBtn.setPrefWidth(160);
+        loadBtn.setPrefHeight(40);
 
-        loadBtn.setDisable(data == null);
+        if (data == null) {
+            loadBtn.setDisable(true);
+        }
 
         loadBtn.setOnAction(e -> {
-
             if (data == null) return;
-
             gameFlow.setCurrentSlot(slot);
             gameFlow.loadFromSave(data);
-            gameFlow.showGameStart();
+            gameFlow.startGameFromLoad();
         });
 
-        box.getChildren().addAll(title, info, loadBtn);
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        box.getChildren().addAll(info, spacer, loadBtn);
         return box;
     }
 
-    private String formatSlotInfo(SaveData data) {
-
+    private String formatSlotInfo(int slot, SaveData data, GameFlow gameFlow) {
         if (data == null || data.player == null) {
-            return "Nessun salvataggio presente";
+            return "SLOT %d\n\nNessun dato\ndisponibile".formatted(slot);
+        }
+
+        String missionDetails = "Sconosciuta";
+        if (data.progress != null) {
+            it.unicam.cs.mpgc.rpg122711.domain.Player tempPlayer = new it.unicam.cs.mpgc.rpg122711.domain.Player(data.player.name, data.player.characterClass);
+            missionDetails = gameFlow.getMissionName(data.progress.currentMissionIndex, tempPlayer);
         }
 
         return """
-                Player: %s
+                SLOT %d
+                
+                Nome: %s
                 Classe: %s
                 Livello: %d
                 Anno: %d
+                
+                Missione:
+                %s
                 """.formatted(
+                slot,
                 data.player.name,
-                data.player.characterClass,
+                data.player.characterClass.getLabel(),
                 data.player.level,
-                data.world.year
+                data.world.year,
+                missionDetails
         );
     }
 
     private Button createBackButton(GameFlow gameFlow) {
-
-        Button back = new Button("Torna indietro");
-        back.getStyleClass().add("back-btn");
-
+        Button back = new Button("Torna Indietro");
+        back.getStyleClass().add("menu-btn");
+        back.setPrefWidth(200);
+        back.setPrefHeight(45);
         back.setOnAction(e -> gameFlow.showMainMenu());
-
         return back;
     }
 

@@ -1,18 +1,18 @@
 package it.unicam.cs.mpgc.rpg122711.ui;
-
 import it.unicam.cs.mpgc.rpg122711.domain.CharacterClass;
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.flow.GameFlow;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-/*
- * View responsabile della creazione del personaggio.
- *
- * SOLID:
- * - SRP: solo UI + validazione input base
- * - DIP: dipende da GameFlow (controller), non da logica interna
+/**
+ * Vista JavaFX dedicata alla schermata di creazione del personaggio.
+ * Creata per gestire l'inserimento del nome, la selezione della classe con aggiornamento dinamico
+ * della descrizione + inizializzazione del Player nel flusso di gioco.
  */
 public class CharacterCreationView {
 
@@ -21,30 +21,40 @@ public class CharacterCreationView {
 
     public CharacterCreationView(GameFlow gameFlow) {
         this.gameFlow = gameFlow;
-        this.root = new VBox(15);
+        this.root = new VBox(30);
         buildUI();
     }
 
     private void buildUI() {
-
         root.setAlignment(Pos.CENTER);
         root.setId("creationView");
-        root.setStyle("-fx-background-color: #1b1d24;");
+        root.setPadding(new Insets(40));
 
-        Label title = new Label("Creazione Personaggio");
-        styleTitle(title);
+        Label title = new Label("CREAZIONE PERSONAGGIO");
+        title.getStyleClass().add("creation-title");
+
+        VBox formBox = new VBox(20);
+        formBox.setAlignment(Pos.CENTER);
+        formBox.setMaxWidth(360);
+        formBox.getStyleClass().add("creation-box");
 
         TextField nameField = new TextField();
-        nameField.setPromptText("Nome del viaggiatore");
-        nameField.setMaxWidth(260);
+        nameField.setPromptText("Nome del viaggiatore...");
+        nameField.getStyleClass().add("creation-input");
+        nameField.setMaxWidth(280);
 
         ComboBox<CharacterClass> classBox = new ComboBox<>();
+        classBox.getStyleClass().add("menu-btn");
         classBox.getItems().addAll(CharacterClass.values());
         classBox.setValue(CharacterClass.WANDERER);
-        classBox.setMaxWidth(260);
+        classBox.setMaxWidth(280);
 
         Label classDescription = new Label();
-        styleDescription(classDescription);
+        classDescription.getStyleClass().add("class-desc-text");
+        classDescription.setWrapText(true);
+        classDescription.setMaxWidth(280);
+        classDescription.setMinHeight(130);
+        classDescription.setAlignment(Pos.TOP_LEFT);
 
         updateClassDescription(classDescription, classBox.getValue());
 
@@ -53,19 +63,14 @@ public class CharacterCreationView {
         );
 
         Button createBtn = new Button("Inizia Viaggio");
-        styleButton(createBtn);
+        createBtn.getStyleClass().add("menu-btn");
+        createBtn.setPrefWidth(200);
+        createBtn.setPrefHeight(45);
 
         Label result = new Label();
-        result.setStyle("-fx-text-fill: #c96a6a;");
+        result.getStyleClass().add("error-label");
 
-        /*
-         * Azione principale:
-         * - validazione input
-         * - creazione Player
-         * - passaggio al GameFlow
-         */
         createBtn.setOnAction(e -> {
-
             String name = nameField.getText();
             CharacterClass selectedClass = classBox.getValue();
 
@@ -85,86 +90,46 @@ public class CharacterCreationView {
             gameFlow.showGameStart();
         });
 
-        root.getChildren().addAll(
-                title,
+        formBox.getChildren().addAll(
                 nameField,
                 classBox,
                 classDescription,
                 createBtn,
                 result
         );
+
+        Region topSpacer = new Region();
+        VBox.setVgrow(topSpacer, Priority.ALWAYS);
+        Region bottomSpacer = new Region();
+        VBox.setVgrow(bottomSpacer, Priority.ALWAYS);
+
+        root.getChildren().addAll(topSpacer, title, formBox, bottomSpacer);
     }
 
-    private void styleTitle(Label title) {
-        title.setStyle("""
-            -fx-font-size: 28px;
-            -fx-text-fill: #e6e5e0;
-            -fx-font-weight: bold;
-        """);
-    }
-
-    private void styleDescription(Label label) {
-        label.setWrapText(true);
-        label.setMaxWidth(300);
-        label.setStyle("""
-            -fx-text-fill: #b8b8b8;
-            -fx-font-size: 13px;
-        """);
-    }
-
-    private void styleButton(Button button) {
-
-        button.setStyle("""
-            -fx-background-color: #3a3f4b;
-            -fx-text-fill: #e6e5e0;
-            -fx-padding: 10 22;
-            -fx-background-radius: 6;
-        """);
-
-        button.setOnMouseEntered(e ->
-                button.setStyle("""
-                    -fx-background-color: #4a5160;
-                    -fx-text-fill: #ffffff;
-                    -fx-padding: 10 22;
-                    -fx-background-radius: 6;
-                """)
-        );
-
-        button.setOnMouseExited(e ->
-                button.setStyle("""
-                    -fx-background-color: #3a3f4b;
-                    -fx-text-fill: #e6e5e0;
-                    -fx-padding: 10 22;
-                    -fx-background-radius: 6;
-                """)
-        );
-    }
-
-    /*
-     * Single Responsibility: solo descrizione UI della classe
-     */
     private void updateClassDescription(Label label, CharacterClass type) {
-
         if (type == null) return;
 
         switch (type) {
-
             case ARCANIST -> label.setText(
                     "ARCANO\n" +
-                            "Studioso della memoria e della magia antica.\n" +
-                            "✔ Bonus: eventi nascosti\n✔ Maggiore XP da analisi\n✔ Visioni del passato"
+                            "Studioso della memoria e della magia antica.\n\n" +
+                            "✔ Bonus: eventi nascosti\n" +
+                            "✔ Maggiore XP da analisi\n" +
+                            "✔ Visioni del passato"
             );
-
             case WANDERER -> label.setText(
                     "VIANDANTE\n" +
-                            "Viaggiatore equilibrato tra esplorazione e sopravvivenza.\n" +
-                            "✔ Scelte bilanciate\n✔ Meno penalità\n✔ Accesso standard alle missioni"
+                            "Viaggiatore equilibrato tra esplorazione e sopravvivenza.\n\n" +
+                            "✔ Scelte bilanciate\n" +
+                            "✔ Meno penalità\n" +
+                            "✔ Accesso standard alle missioni"
             );
-
             case SCHOLAR -> label.setText(
                     "STUDIOSO\n" +
-                            "Interprete della memoria del mondo.\n" +
-                            "✔ Bonus XP da investigazione\n✔ Può alterare eventi\n✔ Sblocca finali alternativi"
+                            "Interprete della memoria del mondo.\n\n" +
+                            "✔ Bonus XP da investigazione\n" +
+                            "✔ Può alterare eventi\n" +
+                            "✔ Sblocca finali alternativi"
             );
         }
     }

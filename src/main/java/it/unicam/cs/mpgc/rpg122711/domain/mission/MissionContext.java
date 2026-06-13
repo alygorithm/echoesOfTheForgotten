@@ -1,11 +1,10 @@
 package it.unicam.cs.mpgc.rpg122711.domain.mission;
-
 import it.unicam.cs.mpgc.rpg122711.domain.Player;
 import it.unicam.cs.mpgc.rpg122711.service.WorldService;
 
-/*
- * Contesto operativo delle missioni.
- * Fornisce accesso controllato ai sistemi di gioco.
+/**
+ * Contesto operativo che va ad aggregare e fornire i riferimenti ai sistemi di gioco
+ * (giocatore + servizi del mondo) necessari per applicare gli effetti delle scelte.
  */
 public class MissionContext {
 
