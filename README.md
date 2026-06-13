@@ -11,8 +11,8 @@
 ### Istruzioni
 
 ```bash
-git clone <https://github.com/alygorithm/echoesOfTheForgotten.git>
-cd frieren_rpg
+git clone https://github.com/alygorithm/echoesOfTheForgotten.git
+cd echoesOfTheForgotten
 ```
 
 ### Build del progetto
