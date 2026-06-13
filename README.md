@@ -11,7 +11,7 @@
 ### Istruzioni
 
 ```bash
-git clone https://github.com/alygorithm/frieren_rpg.git
+git clone <https://github.com/alygorithm/echoesOfTheForgotten.git>
 cd frieren_rpg
 ```
 
